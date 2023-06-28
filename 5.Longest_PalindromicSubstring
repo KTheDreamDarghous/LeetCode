@@ -1,0 +1,161 @@
+class Solution {
+public:
+    string strrev(string v) {
+        if (v.size() > 1) {
+            string temp_v = "";
+            for (int i = v.size() - 1; i >= 0; i--) {
+                temp_v.push_back(v[i]);
+            }
+            return temp_v;
+        }
+        return v;
+        
+    }
+    /*
+
+    Binary Tree Palindrome Search
+        Args: 
+            int idx
+            string p
+            int node // if (0) at root node, (1) check the left child only, (2) right child only
+
+        Root node: Start with the middle of the string, call it idx.
+            If the char to the right of idx is equal to idx, you will be dealing with an even size palindrome.
+                Continue traversing left and right of idx, use an offset to check 1 left and 2 right for example.
+            Else if the char to the left of idx is equal to the one to the right of idx, you have an even size pal.
+                Continue traversing left and right of idx, use an offset to check 1 left and 1 right for example.
+            Else the palindrome size is only 1 (the char at idx)
+
+            Now the size of palindrome is the root nodes value.
+            If the value is greater or equal to half the size of string, return from the tree, you got it.
+            Else:
+                To traverse to left child node, recurse with idx--
+                To traverse to right child node, recurse with idx++
+                Get the value of the left or right tree using recursion
+
+    */
+    string tree_palindrome_parse(int idx, string p, int node) {
+
+        //# Conditions
+        if ((idx < 0) || (idx >= p.size())) return "";
+
+        int temp_idx = idx;
+        int offset = 1;
+        bool possible_odd = false;
+        string temp_str; // The size of the current node
+
+        string substr_0 = "";
+        string substr_1 = "";
+        std::cout<<"temp_idx: ";
+        std::cout<<temp_idx<<std::endl;
+        // p is odd, so grab the central element and traverse outwards from it
+        // if (((idx + 1) < p.size()) && ((idx - 1) >= 0))
+        // if (p[idx - 1] == p[idx + 1]) {
+        //     odd = true;
+        //     substr_0.push_back(p[idx]);
+        //     offset++;
+        // }
+        temp_idx--;
+        if (((temp_idx + 2) < p.size()) && (temp_idx >= 0)) {
+            if ((p[temp_idx] != p[temp_idx + 1]) && (p[temp_idx] == p[temp_idx + 2])) {
+                // odd = true;
+                substr_0.push_back(p[idx]);
+                offset++;
+            }
+            else if (p[idx - 1] == p[idx + 1]) possible_odd = true;
+        }
+        
+        
+        string temp_holder = "";
+        for (int i = temp_idx; i >= 0; i--) {
+            // std::cout<<i;
+
+            if ((i + offset) >= p.size()) {
+                // std::cout<<"breaking\n";
+                break;
+            }
+
+            if (p[i] == p[i + offset]) {
+                // std::cout<<"adding\n";
+                substr_0.push_back(p[i]);
+                substr_1.push_back(p[i + offset]);
+                offset += 2;
+            }
+            else {
+                std::cout<<p[i]<<std::endl;
+                std::cout<<p[i+offset]<<std::endl;
+                // if ((i + offset + 1) != p.size()) {
+                //     if (p[i] == p[i + offset + 1]) {
+                //         temp_idx = idx - 1;
+                //         temp_holder = strrev(substr_0) + substr_1;
+                //         substr_0.clear();
+                //         substr_1.clear();
+                //         substr_0.push_back(p[idx]);
+                //         offset = 2;
+                //         continue;
+                //     }
+                // }
+                if (possible_odd) {
+                        i = idx;
+                        
+                        temp_holder = strrev(substr_0) + substr_1;
+                        substr_0.clear();
+                        substr_1.clear();
+                        substr_0.push_back(p[idx]);
+                        offset = 2;
+                        possible_odd = false;
+                        // continue;
+                }
+                else break;
+            }
+        }
+        temp_str = strrev(substr_0) + substr_1;
+        if (temp_holder.size() > temp_str.size()) {
+        // std::cout<<"\ntemp_str=temp_holder\n";
+        // std::cout<<temp_str + " " + temp_holder + "\n";
+        temp_str = temp_holder;
+        }
+        // if (temp_str.size() >= (p.size()/2)) return temp_str;
+
+        if (node == 1) {
+            if (temp_str.size() >= (idx * 2)) return temp_str;
+            if (idx == 0) return temp_str;
+            string left_child = tree_palindrome_parse(idx - 1, p, 1);
+            if (left_child.size() > temp_str.size()) return left_child;
+            else return temp_str;
+        }
+        else if (node == 2) {
+            if (temp_str.size() >= ((p.size() - (idx + 1) * 2))) return temp_str;
+            if ((idx + 1) == p.size()) return temp_str;
+            string right_child = tree_palindrome_parse(idx + 1, p, 2);
+            if (right_child.size() > temp_str.size()) return right_child;
+            else return temp_str;
+        }
+        else {
+            string final_string = temp_str;
+            string left_string = tree_palindrome_parse(idx - 1, p, 1);
+            string right_string = tree_palindrome_parse(idx + 1, p, 2);
+            // std::cout << final_string + "\n";
+            // std::cout << left_string + " " + right_string + "\n";
+            if (left_string.size() > final_string.size()) final_string = left_string;
+            if (right_string.size() > final_string.size()) final_string = right_string;
+            return final_string;
+        }
+
+        // return final_string;
+    }
+
+    string longestPalindrome(string s) {
+        string long_substr = "";
+
+        std::set<std::string> filter;
+        for(int i = 0; i < s.length(); i++){
+            filter.insert(std::string(1, s[i]));
+        }
+        if (filter.size() == 1) return s;
+        
+        long_substr = tree_palindrome_parse(s.size()/2, s, 0);
+        if (long_substr.size() == 0) long_substr.push_back(s[0]);
+        return long_substr;
+    }
+};
