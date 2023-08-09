@@ -1,0 +1,54 @@
+#include <string>
+class Solution {
+public:
+
+    int maxArea(vector<int>& height) {
+        int lrgst_container = 0;
+        int size = height.size();
+        
+        for (int i = 0; i < size/2; i++) {
+            int y1 = height[i]; // control on left half
+            int y2 = height[size - 1 - i]; // control on right half
+            int control = max(y1, y2); // control does not move as other side is being traversed
+            int current_dist = size - 1 - i;
+            int offset = 0;
+            int direction = 1;
+            int indep;
+            if (y1 > y2) {
+                offset = size - 1;
+                direction = -1;
+                indep = height[offset];
+                if ((y1 * current_dist) <= lrgst_container) continue;
+            }
+            else {
+                indep = height[offset];
+                if ((y2 * current_dist) <= lrgst_container) continue;
+            }
+            int container_local = indep * current_dist;
+            // std::cout<<"---\nCurrent_Dist: "<<current_dist<<" container_local: "<<container_local<<std::endl;
+            int margin = ((control - indep) * (current_dist)) / control;
+            // std::cout<<margin<<std::endl;
+            int cntr = 0;
+
+            for (int j = 0; j < size - 1 - i; j++) {
+                if (cntr > margin) break;
+                if (height[offset + (j * direction)] > indep) {
+                    indep = height[offset + (j * direction)];
+                    if (indep > control) indep = control;
+                    if ((indep * (current_dist - j)) > container_local) container_local = indep * (current_dist - j);
+                    // std::cout<<"i: " << i <<"j: "<<j<< "\n";
+                    margin = ((control - indep) * (current_dist - j)) / control;
+                    // std::cout<<"new margin: " << margin << "\n";
+                    // std::cout<<"container_local: " << container_local << "\n";
+                    cntr = 0;
+                }
+                cntr++;
+            }
+            if (container_local > lrgst_container) {
+                lrgst_container = container_local;
+            }
+        }
+
+        return lrgst_container;
+    }
+};
