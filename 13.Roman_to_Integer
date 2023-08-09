@@ -1,0 +1,72 @@
+class Solution {
+public:
+    int addRoman(char temp) {
+        switch(temp) {
+            case 'I':
+                return 1;
+            case 'V':
+                return 5;
+            case 'X':
+                return 10;
+            case 'L':
+                return 50;
+            case 'C':
+                return 100;
+            case 'D':
+                return 500;
+            case 'M':
+                return 1000;
+            default:
+                return 0;
+        }
+    }
+
+    int romanToInt(string s) {
+        int sum = 0;
+        // End the loop at the second to last value. Simply add the last value after.
+        for (int i = 0; i < s.size() - 1; i++) { 
+            char temp = s[i];
+            switch(temp) {
+                case 'I':
+                    if (s[i + 1] == 'V') {
+                        sum -= addRoman(temp);
+                    }
+                    else if (s[i + 1] == 'X') {
+                        sum -= addRoman(temp);
+                    }
+                    else {
+                        sum += addRoman(temp);
+                    }
+                    break;
+
+                case 'X':
+                    if (s[i + 1] == 'L') {
+                        sum -= addRoman(temp);
+                    }
+                    else if (s[i + 1] == 'C') {
+                        sum -= addRoman(temp);
+                    }
+                    else {
+                        sum += addRoman(temp);
+                    }
+                    break;
+                case 'C' :
+                    if (s[i + 1] == 'D') {
+                        sum -= addRoman(temp);
+                    }
+                    else if (s[i + 1] == 'M') {
+                        sum -= addRoman(temp);
+                    }
+                    else {
+                        sum += addRoman(temp);
+                    }
+                    break;
+                default:
+                    sum += addRoman(temp);
+                    break;
+            }
+        }
+        sum += addRoman(s[s.size() - 1]);
+        return sum;
+    }
+};
