@@ -1,0 +1,40 @@
+class Solution {
+public:
+    bool backspaceCompare(string s, string t) {
+        string s_post = "";
+        string t_post = "";
+        int erase_cnt = 0;
+        for (int i = (s.size() - 1) ;i >= 0; i--) {
+            if (s[i] == '#') {
+                erase_cnt++;
+                if (i == 0) break;
+            }
+            else {
+                if (erase_cnt > 0) {
+                            std::cout<<"erased - s\n";
+                            erase_cnt--;
+                        }
+                else s_post += s[i];
+            }
+        }
+        erase_cnt = 0;
+        for (int i = (t.size() - 1); i >= 0; i--) {
+                    if (t[i] == '#') {
+                        erase_cnt++;
+                        if (i == 0) break;
+                    }
+                    else {
+                        if (erase_cnt > 0) {
+                            std::cout<<"erased - t\n";
+                            erase_cnt--;
+                        }
+                        else t_post += t[i];
+                    }
+                }
+                reverse(s_post.begin(), s_post.end()); 
+                reverse(t_post.begin(), t_post.end());
+                // std::cout<<"s_post: " << s_post <<"\nt_post: " << t_post<<std::endl;
+                return s_post == t_post;
+    }
+    
+};
