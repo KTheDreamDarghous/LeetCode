@@ -1,0 +1,117 @@
+class Solution {
+public:
+    long max_good = 0;
+
+    void leftGoodScore(vector<int>& nums, int &left_idx, int right_idx, long &global_min, int margin) {
+        bool flag = false;
+        
+        while (left_idx >= 0 && flag == false) {
+            if (nums[left_idx-1] < margin) {
+                flag = true;
+                continue;
+            }
+            left_idx--;
+            // std::cout<<"in left while loop \n";
+            
+            if (nums[left_idx] < global_min) global_min = nums[left_idx];
+            // std::cout << "Global min = " << global_min <<"\n";
+            if ((global_min * (right_idx - left_idx + 1)) > max_good) {
+                max_good = (global_min * (right_idx - left_idx + 1));
+                // std::cout << "New max_good = " << max_good <<"\n";
+            }
+
+            if (left_idx == 0){
+                flag = true;
+                // std::cout<<"left_idx=0\n";
+            }
+        }
+    }
+    void rightGoodScore(vector<int>& nums, int left_idx, int &right_idx, long &global_min, int margin)  {
+        bool flag = false;
+        
+        while (right_idx < nums.size() && flag == false) {
+            if (nums[right_idx+1] < margin) {
+                flag = true;
+                continue;
+            }
+            right_idx++;
+            // std::cout<<"in right while loop \n";
+            
+            if (nums[right_idx] < global_min) global_min = nums[right_idx];
+            // std::cout << "Global min = " << global_min <<"\n";
+            if ((global_min * (right_idx - left_idx + 1)) > max_good) {
+                max_good = (global_min * (right_idx - left_idx + 1));
+                // std::cout << "New max_good = " << max_good <<"\n";
+            }
+            if (right_idx == nums.size()-1) flag = true;
+            // right_idx++;
+        }
+    }
+
+    int maximumScore(vector<int>& nums, int k) {
+        // std::cout<<"First item: " << nums[k] << "\n";
+        int traverse = 0;
+        max_good = nums[k];
+        if (((nums.size() - 1) - k) > k) {
+            traverse = (nums.size() - 1) - k;
+        }
+        else traverse = k;
+        int cntr = traverse;
+        long global_min = nums[k];
+        int left_idx = k;
+        int right_idx = k;
+        bool check_left = true;
+        bool check_right = true;
+        bool left_close = false;
+        bool right_close = false;
+        while (cntr >= 0) {
+            int margin = 0;
+            // std::cout<<"in main while loop \n";
+            if (right_idx+1 >= nums.size()) {
+                margin = 0;
+                right_close = true;
+                // std::cout<<"right close \n";
+            }
+            if (left_idx-1 < 0) {
+                margin = 0;
+                left_close = true;
+                // std::cout<<"left close \n";
+            }
+            if (right_close && left_close) {
+                // std::cout<<"break \n";
+                break;
+            }
+            /* 
+                If right side of k has been fully taversed
+                or if there is both space on left side to traverse 
+                and next one on the left is equal to or greater than 
+                next one on right
+            */
+            if (right_close || (!left_close && nums[left_idx - 1] >= nums[right_idx + 1])) {
+                if (!right_close) {
+                    if (nums[left_idx - 1] > nums[right_idx + 1]) {
+                        margin = nums[right_idx + 1];
+                    }
+                    else margin = nums[left_idx - 1];
+                }
+                leftGoodScore(nums, left_idx, right_idx, global_min, margin);
+            }
+            // Same logic as above but checking if right side is greater or equal
+            else if (left_close || (!right_close && nums[right_idx + 1] >= nums[left_idx - 1])) {
+                if (!left_close) {
+                    if (nums[right_idx + 1] > nums[left_idx - 1]) {
+                        margin = nums[right_idx + 1];
+                    }
+                    else margin = nums[right_idx + 1];
+                    // After this run, the next margin will be 
+                }   
+                rightGoodScore(nums, left_idx, right_idx, global_min, margin);
+            }
+        }
+        
+        return max_good;
+        
+
+
+    }
+};
