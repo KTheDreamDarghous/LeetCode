@@ -1,0 +1,76 @@
+class Solution {
+public:
+    long getPowerOfTwoRemainder(long x)
+    {
+        long temp = x;
+        long remainder = 0;
+        int cnt = 0;
+        int last_elem = 0;
+        std::string binary = std::bitset<32>(x).to_string(); //to binary
+
+        for (int i = 0; i < binary.size(); i++) {
+            if (binary[i] == '1') {
+                last_elem = i;
+                i = binary.size();
+            }
+        }
+        for (int i = binary.size() - 1; i > last_elem; i--) { // binary[0] holds the binary number
+            if (binary[i] == '1') remainder += pow(2,cnt);
+            cnt++;
+        }
+
+
+        return remainder;
+    }
+    bool IsPowerOfTwo(ulong x)
+    {
+        return (x != 0) && ((x & (x - 1)) == 0);
+    }
+
+    int getBinaryFlip(int &flipCnt, long remainder) {
+        long output = getPowerOfTwoRemainder(remainder);
+        if (output == 0) {
+            return remainder;
+        }
+        else {
+            flipCnt++;
+            return getBinaryFlip(flipCnt, output);
+        }
+
+
+    }
+
+    int kthGrammar(int n, int k) {
+
+        if (n == 1 || k == 1) return 0;
+        int bit = 0;
+        long findBinary = k;
+        int flipCnt = 0;
+        bool binaryFlag = false;
+        int test = getBinaryFlip(flipCnt, k);
+
+        if (IsPowerOfTwo(test)) binaryFlag = true;
+
+
+        int last_elem = 0;
+        if (binaryFlag) {
+            std::string binary = std::bitset<32>(test).to_string(); //to binary
+
+            for (int i = 0; i < binary.size(); i++) {
+                if (binary[i] == '1') {
+                    last_elem = i;
+                    i = binary.size();
+                }
+            }
+            int power = binary.size() - 1 - last_elem;
+            if (power % 2 == 0) bit = 0;
+            else bit = 1;
+        }
+        for (int i = 0; i < flipCnt; i++) {
+            bit = !bit;
+        }
+                
+        return bit;
+        }
+        
+};
